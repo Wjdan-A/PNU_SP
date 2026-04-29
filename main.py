@@ -9,6 +9,7 @@ import torch
 import torch.nn as nn
 from datetime import datetime
 import random
+import pytz
 
 
 # 1. SETUP APP & STATION CAPACITIES
@@ -50,11 +51,19 @@ except:
 # 3. DATABASE INITIALIZATION
 
 def get_realistic_rate():
-    hr = datetime.now().hour
-    if 8 <= hr <= 10: return random.uniform(0.70, 0.90)
-    elif 11 <= hr <= 15: return random.uniform(0.30, 0.60)
-    else: return random.uniform(0.05, 0.15)
-
+    # تحديد المنطقة الزمنية للرياض
+    riyadh_tz = pytz.timezone('Asia/Riyadh')
+    
+    # قراءة الوقت الحالي بتوقيت الرياض
+    hr = datetime.now(riyadh_tz).hour
+    
+    # محاكاة الزحمة بناءً على ساعات الدوام في الجامعة
+    if 8 <= hr <= 10: 
+        return random.uniform(0.70, 0.90)  # زحمة الصباح
+    elif 11 <= hr <= 15: 
+        return random.uniform(0.30, 0.60)  # زحمة الظهر
+    else: 
+        return random.uniform(0.05, 0.15)  # الأوقات الفاضية
 def init_db():
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
